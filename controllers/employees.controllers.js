@@ -47,6 +47,46 @@ const createEmployees = (req, res, next) => {
     });
 };
 
+const clockInEmployee = (req, res, next) => {
+  const { WaId, Body } = req.body;
+  const client = require("twilio")(
+    process.env.TWILIO_ACC_SSID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
+  let isEmployeeAtWork;
+  const whatsappBody = Body.toUpperCase();
+  if (whatsappBody === "CLOCK-IN") isEmployeeAtWork = true;
+  else if (whatsappBody === "CLOCK-OUT") isEmployeeAtWork = false;
+
+  if (whatsappBody === "CLOCK-IN" || whatsappBody === "CLOCK-OUT") {
+    return Employee.findOneAndUpdate(
+      { phone: WaId },
+      { status: isEmployeeAtWork }
+    )
+      .then((employee) => {
+        if (employee) {
+          client.messages.create({
+            body: `${whatsappBody} successful`,
+            from: "whatsapp:+14155238886",
+            to: `whatsapp:+${WaId}`,
+          });
+          res.json(`${whatsappBody} successful`);
+        } else {
+          res.status(404).send("Empleado no encontrado");
+        }
+      })
+      .catch((error) => {
+        res.status(500).send(error.message);
+      });
+  } else {
+    return client.messages.create({
+      body: `Type "Clock-in" or "Clock-out`,
+      from: "whatsapp:+14155238886",
+      to: `whatsapp:+${WaId}`,
+    });
+  }
+};
+
 const updateEmployee = (req, res, next) => {
   const { id } = req.params;
   const updateData = req.body;
@@ -94,6 +134,7 @@ module.exports = {
   getAllEmployees,
   getOneEmployee,
   createEmployees,
+  clockInEmployee,
   updateEmployee,
   deleteEmployee,
 };

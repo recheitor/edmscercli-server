@@ -18,6 +18,14 @@ const employeeSchema = new Schema(
     salary: {
       type: Number,
     },
+    phone: {
+      type: String,
+      required: [true, "Phone is required."],
+    },
+    status: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

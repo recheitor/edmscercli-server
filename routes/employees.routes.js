@@ -4,6 +4,7 @@ const {
   getAllEmployees,
   getOneEmployee,
   createEmployees,
+  clockInEmployee,
   updateEmployee,
   deleteEmployee,
 } = require("../controllers/employees.controllers");
@@ -11,6 +12,7 @@ const {
 router.get("/", getAllEmployees);
 router.get("/:id", getOneEmployee);
 router.post("/create", createEmployees);
+router.post("/clockIn", clockInEmployee);
 router.put("/:id", updateEmployee);
 router.delete("/:id", deleteEmployee);
 
